@@ -13,6 +13,7 @@ class PasswordChecker(QWidget):
 
         if not password:
             self.result.setText("⚠️ Спочатку введи пароль.")
+            self.strength_label.setText("")
             return
 
         # Хешування пароля (SHA1)
@@ -26,9 +27,11 @@ class PasswordChecker(QWidget):
             response = requests.get(url)
             if response.status_code != 200:
                 self.result.setText("⚠️ Помилка при зверненні до HIBP API.")
+                self.strength_label.setText("")
                 return
         except Exception as e:
             self.result.setText(f"⚠️ Помилка мережі: {str(e)}")
+            self.strength_label.setText("")
             return
 
         # Пошук у відповідях
@@ -36,9 +39,11 @@ class PasswordChecker(QWidget):
         for h, count in hashes:
             if h == suffix:
                 self.result.setText(f"❌ Цей пароль злитий! Знайдено {count} раз(ів) у базі.")
+                self.strength_label.setText("")
                 return
 
         self.result.setText("✅ Цей пароль **не злитий** у публічних базах.")
+        self.strength_label.setText("")
     def __init__(self):
         super().__init__()
 
@@ -183,13 +188,16 @@ class PasswordChecker(QWidget):
         password = self.input.text()
         if password in self.popular_passwords:
             self.result.setText("⚠️ Пароль знайдено в списку небезпечних! Спробуйте інший.")
+            self.strength_label.setText("")
         else:
             self.result.setText("✅ Пароль не знайдено в списку небезпечних.")
+            self.strength_label.setText("")
 
     def estimate_crack_time(self):
         password = self.input.text()
         if not password:
             self.result.setText("⚠️ Спочатку введи пароль.")
+            self.strength_label.setText("")
             return
 
         has_digit = any(char.isdigit() for char in password)
@@ -237,21 +245,26 @@ class PasswordChecker(QWidget):
         )
 
         self.result.setText(message)
+        self.strength_label.setText("")
 
 
     def show_length_input(self):
         self.start_generate_button.hide()     # ховаємо першу кнопку
         self.length_input.show()              # показуємо поле довжини
-        self.generate_button.show()           # показуємо кнопку "Згенерувати"
+        self.generate_button.show()   
+        self.result.setText("")
+        self.strength_label.setText("")        # показуємо кнопку "Згенерувати"
 
     def generate_password(self):
         try:
             length = int(self.length_input.text())
             if length < 0 or length > 100:
                 self.result.setText("⚠️ Довжина має бути від 1 до 100.")
+                self.strength_label.setText("")
                 return
         except ValueError:
             self.result.setText("⚠️ Введи ціле число для довжини.")
+            self.strength_label.setText("")
             return
 
         chars = string.ascii_letters + string.digits + string.punctuation
@@ -263,6 +276,7 @@ class PasswordChecker(QWidget):
         self.start_generate_button.show()     # ховаємо першу кнопку
         self.length_input.hide()              # показуємо поле довжини
         self.generate_button.hide()           # показуємо кнопку "Згенерувати"
+        self.result.setText("")
 
 # 🔹 Запуск програми
 app = QApplication(sys.argv)
