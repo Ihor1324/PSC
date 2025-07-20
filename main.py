@@ -258,8 +258,8 @@ class PasswordChecker(QWidget):
     def generate_password(self):
         try:
             length = int(self.length_input.text())
-            if length < 0 or length > 100:
-                self.result.setText("⚠️ Довжина має бути від 1 до 100.")
+            if length < 0 or length > 64:
+                self.result.setText("⚠️ Довжина має бути від 0 до 64.")
                 self.strength_label.setText("")
                 return
         except ValueError:
